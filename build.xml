@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="Query Expression" default="Welcome">
+    
+    <property file="build.properties" />
+
+    <fileset dir="${project.basedir}/src" id="src">
+        <include name="**/*.php"/>
+    </fileset>
+
+    <fileset dir="${project.basedir}/tests" id="tests">
+        <include name="**/*.php"/>
+    </fileset>
+    
+    <target name="Welcome">
+        <echo msg="You must execute Phing with a build target, use the `-l` parameter to view available targets." />
+    </target>
+    
+    <target name="phpunit" description="Running unit tests">
+        <exec
+            passthru="${passthru}"
+            dir="${project.basedir}"
+            command="${project.vendor.bin}/phpunit"
+        />
+    </target>
+    
+    <target name="phpcs" description="Analyzes the PHP source code and tries to fix coding standards issues">
+        <exec passthru="${passthru}" executable="${project.vendor.bin}/php-cs-fixer">
+            <arg value="fix" />
+            <arg value="${project.basedir}/src" />
+        </exec>
+        <exec passthru="${passthru}" executable="${project.vendor.bin}/php-cs-fixer">
+            <arg value="fix" />
+            <arg value="${project.basedir}/tests" />
+        </exec>
+    </target>
+    
+    <target name="phplint" description="Checks the PHP source code for basic syntax errors">
+        <phplint>
+            <fileset refid="src" />
+            <fileset refid="tests" />
+        </phplint>
+    </target>
+    
+    <target name="phpmd" description="PHPMD takes a given PHP source code base and look for several potential problems within that source">
+        <phpmd rulesets="codesize,naming,unusedcode">
+            <fileset refid="src" />
+            <fileset refid="tests" />
+        </phpmd>
+    </target>
+
+</project>
